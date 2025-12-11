@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🤡 ШАПИРО ИИ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { 
+            margin: 0; 
+            background: #1a0033; 
+            color: white; 
+            font-family: Comic Sans MS; 
+            text-align: center; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .chat { flex: 1; padding: 20px; overflow-y: auto; }
+        .message { 
+            background: #4ecdc4; 
+            margin: 10px; 
+            padding: 15px; 
+            border-radius: 20px; 
+            max-width: 80%; 
+            margin-left: auto; 
+            margin-right: auto; 
+        }
+        .input { 
+            padding: 20px; 
+            background: #000; 
+            display: flex; 
+            gap: 10px; 
+        }
+        input { flex: 1; padding: 15px; border-radius: 25px; border: none; font-size: 16px; }
+        button { 
+            padding: 15px 30px; 
+            background: #ff6b35; 
+            color: white; 
+            border: none; 
+            border-radius: 25px; 
+            font-size: 16px; 
+            cursor: pointer; 
+        }
+        .logo { 
+            font-size: 32px; 
+            background: linear-gradient(45deg, #ffeb3b, #ff6b35); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            margin: 20px 0; 
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">🤡 ШАПИРО ИИ 🤡</div>
+    <div class="chat" id="chat">
+        <div class="message">🎪 Добро пожаловать в цирк глупостей!</div>
+        <div class="message">Задавай вопросы — отвечу максимально тупо! 😜</div>
+    </div>
+    <div class="input">
+        <input id="input" placeholder="Спроси Шапиро...">
+        <button onclick="send()">🚀</button>
+    </div>
+
+    <script>
+        function addMessage(text, isUser = false) {
+            const chat = document.getElementById('chat');
+            const msg = document.createElement('div');
+            msg.className = 'message';
+            msg.style.background = isUser ? '#ff6b6b' : '#4ecdc4';
+            msg.style.marginLeft = isUser ? 'auto' : '10px';
+            msg.style.marginRight = isUser ? '10px' : 'auto';
+            msg.textContent = text;
+            chat.appendChild(msg);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function send() {
+            const input = document.getElementById('input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            addMessage(text, true);
+            input.value = '';
+
+            // Шапиро отвечает!
+            const answers = [
+                "🤡 Это очевидно! Но я забуду через 5 секунд!",
+                "💡 Гениальный вопрос! Ответ: 42!",
+                "😵 Мой мозг перегрелся!",
+                "🎪 В цирке Шапиро нет плохих вопросов!",
+                "👑 Мой повелитель! Ты всегда прав!"
+            ];
+            
+            setTimeout(() => {
+                const answer = answers[Math.floor(Math.random() * answers.length)];
+                addMessage(answer);
+            }, 1000);
+        }
+
+        document.getElementById('input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') send();
+        });
+    </script>
+</body>
+</html>
