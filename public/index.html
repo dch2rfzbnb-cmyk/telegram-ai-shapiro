@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤡 ШАПИРО ИИ — Цирк глупостей!</title>
+    <title>🤡 ШАПИРО ИИ</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -13,57 +13,157 @@
             font-family: 'Comic Sans MS', cursive, sans-serif;
             height: 100vh;
             overflow: hidden;
-            position: relative;
+            display: flex;
+            flex-direction: column;
         }
-        
-        /* Звездочки и конфетти */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: 
-                radial-gradient(2px 2px at 20px 30px, #ffeb3b, transparent),
-                radial-gradient(2px 2px at 40px 70px, #4caf50, transparent),
-                radial-gradient(1px 1px at 90px 40px, #f44336, transparent),
-                radial-gradient(1px 1px at 130px 80px, #2196f3, transparent);
-            background-repeat: repeat;
-            background-size: 200px 100px;
-            animation: sparkle 20s linear infinite;
-            pointer-events: none;
-            z-index: 1;
-        }
-        
-        @keyframes sparkle {
-            0% { transform: translateY(0px) rotate(0deg); }
-            100% { transform: translateY(-100px) rotate(360deg); }
-        }
-
         .header {
             text-align: center;
-            padding: 15px;
-            background: rgba(255, 215, 0, 0.1);
+            padding: 20px;
+            background: rgba(255,235,59,0.2);
             border-bottom: 3px solid #ffeb3b;
-            position: relative;
-            z-index: 10;
         }
-        
-        .logo {
-            font-size: 24px;
+        .logo { font-size: 28px; text-shadow: 0 0 20px #ffeb3b; }
+        .chat {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 15px 20px;
+            border-radius: 25px;
+            animation: bounce 0.5s;
+        }
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+        }
+        .message.bot {
+            align-self: flex-start;
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        }
+        @keyframes bounce {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .input-area {
+            padding: 20px;
+            background: rgba(0,0,0,0.9);
+            border-top: 3px solid #ffeb3b;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        input {
+            flex: 1;
+            padding: 18px 25px;
+            border: 2px solid #ffeb3b;
+            border-radius: 30px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+        }
+        input::placeholder { color: #ffeb3b; }
+        button {
+            padding: 18px 30px;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
             font-weight: bold;
-            text-shadow: 0 0 20px #ffeb3b;
-            margin-bottom: 5px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255,107,53,0.4);
         }
-        
-        .lord-status {
-            font-size: 12px;
-            opacity: 0.8;
-            background: rgba(255, 0, 0, 0.2);
-            padding: 5px 10px;
-            border-radius: 20px;
-            border: 1px solid #ff4444;
-            display: inline-block;
-            animation: pulse 2s infinite;
+        button:hover:not(:disabled) { transform: translateY(-3px); }
+        button:disabled { background: #666; cursor: not-allowed; }
+        .shapiro { 
+            position: fixed; 
+            bottom: 120px; 
+            right: 20px; 
+            font-size: 50px; 
+            animation: float 3s infinite; 
         }
-        
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 5px #ff4444; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🤡 ШАПИРО ИИ — ЦИРК ГЛУПОСТЕЙ! 🎪</div>
+    </div>
+    
+    <div class="chat" id="chat">
+        <div class="message bot">🎪 Добро пожаловать в цирк Шапиро! 🤡</div>
+        <div class="message bot">Задавай вопросы — получите максимально тупые ответы! 😜</div>
+    </div>
+    
+    <div class="shapiro">🤡</div>
+    
+    <div class="input-area">
+        <div class="input-group">
+            <input id="messageInput" placeholder="Спроси Шапиро что-нибудь глупое..." onkeypress="if(event.key=='Enter') sendMessage()">
+            <button id="sendBtn" onclick="sendMessage()">🚀 ОТПРАВИТЬ</button>
+        </div>
+    </div>
+
+    <script>
+        // Telegram WebApp
+        if(window.Telegram && Telegram.WebApp) {
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const btn = document.getElementById('sendBtn');
+            const text = input.value.trim();
+            
+            if(!text) return;
+            
+            // Пользовательское сообщение
+            addMessage(text, true);
+            input.value = '';
+            btn.disabled = true;
+            btn.textContent = '🤖 ШАПИРО ДУМАЕТ...';
+            
+            // Шапиро отвечает (mock для деплоя)
+            setTimeout(() => {
+                const answers = [
+                    "🤡 Это очевидно! Но я забуду через 5 секунд!",
+                    "💡 Гениальный вопрос! Ответ: 42!",
+                    "😵 Мой мозг перегрелся! Спроси проще!",
+                    "🎪 В цирке Шапиро ВСЕ вопросы глупые!",
+                    "👑 Мой повелитель! Ты всегда прав!",
+                    "💰 Купи трон — будешь королём глупостей!",
+                    "🧠 Я вспомнил... Нет, забыл! 😵",
+                    "🚀 Летим на Марс! Шучу, сижу в шапито!",
+                    "😜 Глупый вопрос — гениальный ответ: НЕ ЗНАЮ!"
+                ];
+                const answer = answers[Math.floor(Math.random() * answers.length)];
+                addMessage(answer);
+                btn.disabled = false;
+                btn.textContent = '🚀 ОТПРАВИТЬ';
+            }, 1200 + Math.random() * 1800);
+        }
+
+        function addMessage(text, isUser) {
+            const chat = document.getElementById('chat');
+            const msg = document.createElement('div');
+            msg.className = 'message ' + (isUser ? 'user' : 'bot');
+            msg.textContent = text;
+            chat.appendChild(msg);
+            chat.scrollTop = chat.scrollHeight;
+        }
+    </script>
+</body>
+</html>
